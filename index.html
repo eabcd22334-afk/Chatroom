@@ -373,103 +373,6 @@ window.openChangePinModal = function() {
         }
 
         window.closeChangePinModal = function() {
-                  </label>
-
-            <!-- ইমেজ প্রিভিউ কন্টেইনার (ছবি সিলেক্ট করলে ছোট করে দেখাবে) -->
-            <div id="image-preview-container" class="hidden relative items-center">
-                <img id="image-preview" class="w-10 h-10 object-cover rounded-lg border border-[#556b4f]" />
-                <button type="button" onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">✕</button>
-            </div>
-
-            <input type="text" id="message-input" placeholder="একটি বার্তা লিখুন..." class="input input-bordered matte-input flex-1 rounded-full h-11 text-sm" autocomplete="off" />
-            
-            <button type="submit" class="btn btn-circle bg-[#556b4f] hover:bg-[#657d5f] text-[#f4f4f0] border-none shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L5.999 12zm0 0h7.5" />
-                </svg>
-            </button>
-        </form>
-    </div>
-
-    <!-- পিন পরিবর্তনের পপআপ মডাল -->
-    <div id="pin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex justify-center items-center hidden z-50">
-        <div class="card w-80 matte-card shadow-2xl p-6 rounded-2xl border border-[#354230]">
-            <h3 class="text-lg font-bold text-[#a3b899] mb-1">নতুন পিন সেট করুন</h3>
-            <p class="text-[11px] text-[#8fa287] mb-4">৪ ডিজিটের নতুন পিন কোড লিখুন</p>
-            <div class="space-y-3">
-                <input type="password" id="new-pin" placeholder="নতুন পিন (৪ ডিজিট)" class="input input-bordered matte-input w-full rounded-xl text-center tracking-widest text-sm" maxlength="4" />
-                <div class="flex gap-2 mt-4">
-                    <button onclick="closeChangePinModal()" class="btn btn-sm flex-1 btn-ghost border border-[#354230] text-[#a3b899]">বাতিল</button>
-                    <button onclick="updateCloudPin()" class="btn btn-sm flex-1 bg-[#556b4f] hover:bg-[#657d5f] text-white border-none">সেভ করুন</button>
-                </div>
-                <p id="modal-msg" class="text-xs text-center mt-2 font-medium"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ফায়ারবেস ও লজিক স্ক্রিপ্ট -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, get, child, onChildAdded, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8aJlXFdYdGqDkAF3RPGdSxR6RLGXd0Bs",
-            authDomain: "assanger-51e65.firebaseapp.com",
-            databaseURL: "https://assanger-51e65-default-rtdb.firebaseio.com",
-            projectId: "assanger-51e65",
-            storageBucket: "assanger-51e65.appspot.com",
-            messagingSenderId: "887503433353",
-            appId: "1:887503433353:web:8255955b0d958ea88e2058"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const messagesRef = ref(db, 'messages');
-        const pinRef = ref(db, 'settings/pin');
-
-        const MASTER_PASSWORD = "SagorMasterPassword99"; 
-        let isAdmin = false;
-        let myUserName = "";
-        let loadedMessageIds = new Set();
-        let selectedBase64Image = null;
-
-        get(pinRef).then((snapshot) => {
-            if (!snapshot.exists()) {
-                set(pinRef, "1000");
-            }
-        });
-
-        window.verifyPin = async function() {
-            const inputVal = document.getElementById('pin-input').value.trim();
-            try {
-                const snapshot = await get(pinRef);
-                const currentPin = snapshot.exists() ? snapshot.val() : "1000";
-
-                if (inputVal === MASTER_PASSWORD) {
-                    isAdmin = true;
-                    document.getElementById('pin-section').classList.add('hidden');
-                    document.getElementById('name-section').classList.remove('hidden');
-                } else if (inputVal === currentPin) {
-                    isAdmin = false;
-                    document.getElementById('pin-section').classList.add('hidden');
-                    document.getElementById('name-section').classList.remove('hidden');
-                } else {
-                    document.getElementById('pin-error').classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("পিন ভেরিফিকেশন এরর:", error);
-                alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
-            }
-        }
-
-        window.openChangePinModal = function() {
-            if (!isAdmin) return;
-            document.getElementById('pin-modal').classList.remove('hidden');
-            document.getElementById('new-pin').value = '';
-            document.getElementById('modal-msg').innerText = '';
-        }
-
-        window.closeChangePinModal = function() {
             document.getElementById('pin-modal').classList.add('hidden');
         }
 
@@ -505,6 +408,7 @@ window.openChangePinModal = function() {
             document.getElementById('current-user-display').innerText = `${myUserName}`;
             
             if (isAdmin) {
+                document.getElementById('master-theme-btn').classList.remove('hidden');
                 document.getElementById('change-pin-btn').classList.remove('hidden');
             }
 
@@ -512,9 +416,9 @@ window.openChangePinModal = function() {
             document.getElementById('chat-section').classList.remove('hidden');
             document.getElementById('chat-section').classList.add('flex');
             loadMessages();
+            listenToPinnedMessage();
         }
 
-        // ছবি প্রিভিউ করার ফাংশন
         window.previewImage = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -529,7 +433,6 @@ window.openChangePinModal = function() {
             }
         }
 
-        // সিলেক্ট করা ছবি ডিলিট বা ক্যানসেল করার ফাংশন
         window.removeImage = function() {
             selectedBase64Image = null;
             document.getElementById('image-input').value = '';
@@ -558,6 +461,52 @@ window.openChangePinModal = function() {
             removeImage();
         }
 
+        // মেসেজ ডিলিট (শুধুমাত্র মাস্টার অ্যাডমিন)
+        window.deleteMessage = function(messageId) {
+            if (!isAdmin) return;
+            if (confirm("এই মেসেজটি কি ডিলিট করতে চান?")) {
+                remove(ref(db, 'messages/' + messageId)).catch((error) => {
+                    console.error("মেসেজ ডিলিট করতে সমস্যা হয়েছে:", error);
+                });
+            }
+        }
+
+        // মেসেজ পিন করা (শুধুমাত্র মাস্টার অ্যাডমিন)
+        window.pinMessage = function(text, sender) {
+            if (!isAdmin) return;
+            const content = text ? `${sender}: ${text}` : `${sender}: [ছবি]`;
+            set(pinnedMsgRef, content).catch(err => console.error("Pin error:", err));
+        }
+
+        // পিন আনডু করা (শুধুমাত্র মাস্টার অ্যাডমিন)
+        window.unpinMessage = function() {
+            if (!isAdmin) return;
+            remove(pinnedMsgRef).catch(err => console.error("Unpin error:", err));
+        }
+
+        // লাইভ পিন লিসেনার
+        function listenToPinnedMessage() {
+            onValue(pinnedMsgRef, (snapshot) => {
+                const banner = document.getElementById('pinned-banner');
+                const contentSpan = document.getElementById('pinned-text-content');
+                const unpinBtn = document.getElementById('unpin-btn');
+
+                if (snapshot.exists()) {
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                    contentSpan.innerText = snapshot.val();
+                    if (isAdmin) {
+                        unpinBtn.classList.remove('hidden');
+                    }
+                } else {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                    contentSpan.innerText = "কোনো মেসেজ পিন করা নেই";
+                    unpinBtn.classList.add('hidden');
+                }
+            });
+        }
+
         function loadMessages() {
             get(child(ref(db), 'messages')).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -566,10 +515,11 @@ window.openChangePinModal = function() {
                         const data = childSnapshot.val();
                         if (!loadedMessageIds.has(messageId)) {
                             loadedMessageIds.add(messageId);
-                            appendMessage(data);
+                            appendMessage(messageId, data);
                         }
                     });
                 }
+                isInitialLoad = false;
             });
 
             onChildAdded(messagesRef, (snapshot) => {
@@ -577,29 +527,59 @@ window.openChangePinModal = function() {
                 const data = snapshot.val();
                 if (!loadedMessageIds.has(messageId)) {
                     loadedMessageIds.add(messageId);
-                    appendMessage(data);
+                    appendMessage(messageId, data);
+                    
+                    // পুরনো মেসেজ লোড হওয়ার পর নতুন লাইভ মেসেজ আসলে শব্দ বাজবে
+                    if (!isInitialLoad) {
+                        playNotificationSound();
+                    }
                 }
+            });
+
+            onChildRemoved(messagesRef, (snapshot) => {
+                const messageId = snapshot.key;
+                const messageElement = document.getElementById(`msg-${messageId}`);
+                if (messageElement) {
+                    messageElement.remove();
+                }
+                loadedMessageIds.delete(messageId);
             });
         }
 
-        function appendMessage(data) {
+        function appendMessage(messageId, data) {
             const container = document.getElementById('message-container');
             const isMe = data.sender === myUserName;
             const div = document.createElement('div');
             
-            div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-2`;
+            div.id = `msg-${messageId}`;
+            div.className = `message-row flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-2 relative`;
             const bubbleClass = isMe ? 'messenger-bubble-me' : 'messenger-bubble-other';
 
             let imageHtml = data.image ? `<img src="${data.image}" class="max-w-[200px] rounded-lg mb-1 object-cover cursor-pointer" onclick="window.open(this.src)" />` : '';
             let textHtml = data.text ? `<p class="break-words leading-relaxed">${data.text}</p>` : '';
 
+            // অ্যাডমিন হলে ডিলিট এবং পিন বাটন শো করবে
+            let actionBtnsHtml = '';
+            if (isAdmin) {
+                const safeText = (data.text || '').replace(/'/g, "\\'");
+                actionBtnsHtml = `
+                    <div class="action-btns opacity-0 transition-opacity absolute -top-2 ${isMe ? '-left-12' : '-right-12'} flex gap-1">
+                        <button onclick="pinMessage('${safeText}', '${data.sender}')" class="bg-amber-500/80 hover:bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]" title="পিন করুন">📌</button>
+                        <button onclick="deleteMessage('${messageId}')" class="bg-red-500/80 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]" title="ডিলিট করুন">✕</button>
+                    </div>
+                `;
+            }
+
             div.innerHTML = `
-                <span class="text-[10px] text-[#8fa287] px-1 mb-0.5">${!isMe ? data.sender : ''}</span>
-                <div class="max-w-[75%] px-4 py-2.5 text-sm shadow-xs ${bubbleClass}">
-                    ${imageHtml}
-                    ${textHtml}
+                <span class="text-[10px] text-[var(--text-muted)] px-1 mb-0.5">${!isMe ? data.sender : ''}</span>
+                <div class="relative max-w-[75%]">
+                    ${actionBtnsHtml}
+                    <div class="px-4 py-2.5 text-sm shadow-xs ${bubbleClass}">
+                        ${imageHtml}
+                        ${textHtml}
+                    </div>
                 </div>
-                <span class="text-[9px] text-[#708069] px-1 mt-0.5">${data.time || ''}</span>
+                <span class="text-[9px] text-[var(--text-muted)] px-1 mt-0.5">${data.time || ''}</span>
             `;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
@@ -608,295 +588,6 @@ window.openChangePinModal = function() {
         window.clearLocalChat = function() {
             document.getElementById('message-container').innerHTML = '';
         }
-    </script>
-</body>
-</html>
-            </div>
-        </div>
-
-        <div id="message-container" class="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col bg-[#141915]"></div>
-
-        <form id="chat-form" class="p-3 bg-[#1a1f1b] border-t border-[#354230] flex gap-2 items-center px-4">
-            <label class="cursor-pointer btn btn-circle btn-sm bg-[#242c23] hover:bg-[#354230] text-[#a3b899] border border-[#354230]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                </svg>
-                <input type="file" id="image-input" accept="image/*" class="hidden" />
-            </label>
-
-            <div id="image-preview-container" class="hidden relative items-center">
-                <img id="image-preview" class="w-10 h-10 object-cover rounded-lg border border-[#556b4f]" />
-                <button type="button" id="remove-image-btn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">✕</button>
-            </div>
-
-            <input type="text" id="message-input" placeholder="একটি বার্তা লিখুন..." class="input input-bordered matte-input flex-1 rounded-full h-11 text-sm" autocomplete="off" />
-            
-            <button type="submit" class="btn btn-circle bg-[#556b4f] hover:bg-[#657d5f] text-[#f4f4f0] border-none shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L5.999 12zm0 0h7.5" />
-                </svg>
-            </button>
-        </form>
-    </div>
-
-    <!-- পিন পরিবর্তনের পপআপ মডাল -->
-    <div id="pin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex justify-center items-center hidden z-50">
-        <div class="card w-80 matte-card shadow-2xl p-6 rounded-2xl border border-[#354230]">
-            <h3 class="text-lg font-bold text-[#a3b899] mb-1">নতুন পিন সেট করুন</h3>
-            <p class="text-[11px] text-[#8fa287] mb-4">৪ ডিজিটের নতুন পিন কোড লিখুন</p>
-            <div class="space-y-3">
-                <input type="password" id="new-pin" placeholder="নতুন পিন (৪ ডিজিট)" class="input input-bordered matte-input w-full rounded-xl text-center tracking-widest text-sm" maxlength="4" />
-                <div class="flex gap-2 mt-4">
-                    <button id="close-modal-btn" class="btn btn-sm flex-1 btn-ghost border border-[#354230] text-[#a3b899]">বাতিল</button>
-                    <button id="update-pin-btn" class="btn btn-sm flex-1 bg-[#556b4f] hover:bg-[#657d5f] text-white border-none">সেভ করুন</button>
-                </div>
-                <p id="modal-msg" class="text-xs text-center mt-2 font-medium"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ফায়ারবেস ও অথ লজিক স্ক্রিপ্ট -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, get, child, onChildAdded, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8aJlXFdYdGqDkAF3RPGdSxR6RLGXd0Bs",
-            authDomain: "assanger-51e65.firebaseapp.com",
-            databaseURL: "https://assanger-51e65-default-rtdb.firebaseio.com",
-            projectId: "assanger-51e65",
-            storageBucket: "assanger-51e65.appspot.com",
-            messagingSenderId: "887503433353",
-            appId: "1:887503433353:web:8255955b0d958ea88e2058",
-            measurementId: "G-5J5CC8HKNZ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        const messagesRef = ref(db, 'messages');
-        const pinRef = ref(db, 'settings/pin');
-
-        const MASTER_PASSWORD = "SagorMasterPassword99"; 
-        let isAdmin = false;
-        let myUserName = "";
-        let myUserPhoto = "";
-        let loadedMessageIds = new Set();
-        let selectedBase64Image = null;
-
-        get(pinRef).then((snapshot) => {
-            if (!snapshot.exists()) {
-                set(pinRef, "1000");
-            }
-        });
-
-        // গুগল দিয়ে লগইন
-        document.getElementById('google-login-btn').addEventListener('click', async function() {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                
-                myUserName = user.displayName || "Google User";
-                myUserPhoto = user.photoURL || "";
-                isAdmin = false;
-
-                if (myUserPhoto) {
-                    document.getElementById('header-avatar-container').innerHTML = `
-                        <img src="${myUserPhoto}" class="w-10 h-10 rounded-full object-cover shadow border border-[#556b4f]" />
-                    `;
-                }
-
-                document.getElementById('current-user-display').innerText = myUserName;
-                document.getElementById('pin-section').classList.add('hidden');
-                document.getElementById('chat-section').classList.remove('hidden');
-                document.getElementById('chat-section').classList.add('flex');
-                loadMessages();
-
-            } catch (error) {
-                console.error("গুগল লগইন এরর:", error);
-                alert("গুগল লগইন সফল হয়নি! আবার চেষ্টা করুন।");
-            }
-        });
-
-        // পিন ভেরিফিকেশন
-        document.getElementById('verify-pin-btn').addEventListener('click', async function() {
-            const inputVal = document.getElementById('pin-input').value.trim();
-            try {
-                const snapshot = await get(pinRef);
-                const currentPin = snapshot.exists() ? snapshot.val() : "1000";
-
-                if (inputVal === MASTER_PASSWORD) {
-                    isAdmin = true;
-                    document.getElementById('pin-section').classList.add('hidden');
-                    document.getElementById('name-section').classList.remove('hidden');
-                } else if (inputVal === currentPin) {
-                    isAdmin = false;
-                    document.getElementById('pin-section').classList.add('hidden');
-                    document.getElementById('name-section').classList.remove('hidden');
-                } else {
-                    document.getElementById('pin-error').classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("পিন ভেরিফিকেশন এরর:", error);
-                alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
-            }
-        });
-
-        // পিন মোডাল ওপেন/ক্লোজ
-        document.getElementById('change-pin-btn').addEventListener('click', function() {
-            if (!isAdmin) return;
-            document.getElementById('pin-modal').classList.remove('hidden');
-            document.getElementById('new-pin').value = '';
-            document.getElementById('modal-msg').innerText = '';
-        });
-
-        document.getElementById('close-modal-btn').addEventListener('click', function() {
-            document.getElementById('pin-modal').classList.add('hidden');
-        });
-
-        // পিন আপডেট
-        document.getElementById('update-pin-btn').addEventListener('click', async function() {
-            if (!isAdmin) return;
-            const newPinInput = document.getElementById('new-pin').value.trim();
-            const msgEl = document.getElementById('modal-msg');
-
-            try {
-                if (newPinInput.length !== 4) {
-                    msgEl.className = "text-xs text-center mt-2 text-[#e28787]";
-                    msgEl.innerText = "নতুন পিন অবশ্যই ৪ ডিজিটের হতে হবে!";
-                    return;
-                }
-
-                await set(pinRef, newPinInput);
-                msgEl.className = "text-xs text-center mt-2 text-emerald-400";
-                msgEl.innerText = "পিন সফলভাবে ক্লাউডে আপডেট হয়েছে!";
-                setTimeout(() => {
-                    document.getElementById('pin-modal').classList.add('hidden');
-                }, 1200);
-            } catch (error) {
-                console.error("পিন আপডেট এরর:", error);
-                msgEl.className = "text-xs text-center mt-2 text-[#e28787]";
-                msgEl.innerText = "সার্ভারে আপডেট করতে সমস্যা হয়েছে!";
-            }
-        });
-
-        // ইউজারনেম সেট
-        document.getElementById('set-username-btn').addEventListener('click', function() {
-            const name = document.getElementById('username-input').value.trim();
-            if (!name) return alert('দয়া করে আপনার নাম লিখুন!');
-            myUserName = name;
-            document.getElementById('current-user-display').innerText = `${myUserName}`;
-            
-            if (isAdmin) {
-                document.getElementById('change-pin-btn').classList.remove('hidden');
-            }
-
-            document.getElementById('name-section').classList.add('hidden');
-            document.getElementById('chat-section').classList.remove('hidden');
-            document.getElementById('chat-section').classList.add('flex');
-            loadMessages();
-        });
-
-        // ইমেজ প্রিভিউ
-        document.getElementById('image-input').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedBase64Image = e.target.result;
-                    document.getElementById('image-preview').src = selectedBase64Image;
-                    document.getElementById('image-preview-container').classList.remove('hidden');
-                    document.getElementById('image-preview-container').classList.add('flex');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        document.getElementById('remove-image-btn').addEventListener('click', function() {
-            selectedBase64Image = null;
-            document.getElementById('image-input').value = '';
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('image-preview-container').classList.remove('flex');
-        });
-
-        // মেসেজ পাঠানো
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const input = document.getElementById('message-input');
-            const text = input.value.trim();
-            
-            if (!text && !selectedBase64Image) return;
-
-            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            push(messagesRef, { 
-                sender: myUserName, 
-                userPhoto: myUserPhoto || "",
-                text: text || "", 
-                image: selectedBase64Image || null,
-                time: timeNow, 
-                timestamp: Date.now() 
-            });
-
-            input.value = '';
-            document.getElementById('remove-image-btn').click();
-        });
-
-        function loadMessages() {
-            get(child(ref(db), 'messages')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    snapshot.forEach((childSnapshot) => {
-                        const messageId = childSnapshot.key;
-                        const data = childSnapshot.val();
-                        if (!loadedMessageIds.has(messageId)) {
-                            loadedMessageIds.add(messageId);
-                            appendMessage(data);
-                        }
-                    });
-                }
-            });
-
-            onChildAdded(messagesRef, (snapshot) => {
-                const messageId = snapshot.key;
-                const data = snapshot.val();
-                if (!loadedMessageIds.has(messageId)) {
-                    loadedMessageIds.add(messageId);
-                    appendMessage(data);
-                }
-            });
-        }
-
-
-        function appendMessage(data) {
-            const container = document.getElementById('message-container');
-            const isMe = data.sender === myUserName;
-            const div = document.createElement('div');
-            
-            div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-2`;
-            const bubbleClass = isMe ? 'messenger-bubble-me' : 'messenger-bubble-other';
-
-            let imageHtml = data.image ? `<img src="${data.image}" class="max-w-[200px] rounded-lg mb-1 object-cover cursor-pointer" onclick="window.open(this.src)" />` : '';
-            let textHtml = data.text ? `<p class="break-words leading-relaxed">${data.text}</p>` : '';
-            let avatarHtml = (!isMe && data.userPhoto) ? `<img src="${data.userPhoto}" class="w-5 h-5 rounded-full inline-block mr-1 object-cover align-middle" />` : '';
-
-            div.innerHTML = `
-                <span class="text-[10px] text-[#8fa287] px-1 mb-0.5">${!isMe ? avatarHtml + data.sender : ''}</span>
-                <div class="max-w-[75%] px-4 py-2.5 text-sm shadow-xs ${bubbleClass}">
-                    ${imageHtml}
-                    ${textHtml}
-                </div>
-                <span class="text-[9px] text-[#708069] px-1 mt-0.5">${data.time || ''}</span>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        document.getElementById('clear-chat-btn').addEventListener('click', function() {
-            document.getElementById('message-container').innerHTML = '';
-        });
     </script>
 </body>
 </html>
