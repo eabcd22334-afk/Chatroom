@@ -8,109 +8,372 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        :root {
+            --bg-main: #121513;
+            --bg-card: #1a1f1b;
+            --bg-input: #242c23;
+            --border-color: #354230;
+            --text-main: #f4f4f0;
+            --text-muted: #8fa287;
+            --accent-color: #556b4f;
+            --accent-hover: #657d5f;
+            --bubble-me: #556b4f;
+            --bubble-other: #242c23;
+            --chat-bg: #141915;
+        }
+
+        /* থিম ভ্যারিয়েন্ট */
+        body.theme-midnight {
+            --bg-main: #0b0f19;
+            --bg-card: #111827;
+            --bg-input: #1f2937;
+            --border-color: #374151;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --bubble-me: #2563eb;
+            --bubble-other: #1f2937;
+            --chat-bg: #030712;
+        }
+
+        body.theme-crimson {
+            --bg-main: #151212;
+            --bg-card: #1f1a1a;
+            --bg-input: #2c2222;
+            --border-color: #423030;
+            --text-main: #f4f0f0;
+            --text-muted: #a28787;
+            --accent-color: #8f4f4f;
+            --accent-hover: #a35f5f;
+            --bubble-me: #8f4f4f;
+            --bubble-other: #2c2222;
+            --chat-bg: #191414;
+        }
+
         body {
-            background-color: #121513;
-            color: #f4f4f0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background 0.3s ease;
         }
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #1a1f1b; }
-        ::-webkit-scrollbar-thumb { background: #3b4637; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #556b4f; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+        
         .messenger-bubble-me {
-            background-color: #556b4f;
-            color: #f4f4f0;
+            background-color: var(--bubble-me);
+            color: var(--text-main);
             border-radius: 18px 18px 4px 18px;
         }
         .messenger-bubble-other {
-            background-color: #242c23;
-            color: #f4f4f0;
+            background-color: var(--bubble-other);
+            color: var(--text-main);
             border-radius: 18px 18px 18px 4px;
-            border: 1px solid #354230;
+            border: 1px solid var(--border-color);
         }
         .online-dot {
             width: 10px; height: 10px; background-color: #4ade80; border-radius: 50%;
-            border: 2px solid #1a1f1b; display: inline-block;
+            border: 2px solid var(--bg-card); display: inline-block;
         }
         .matte-card {
-            background-color: #1a1f1b;
-            border: 1px solid rgba(112, 128, 105, 0.2);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
         }
         .matte-input {
-            background-color: #242c23 !important;
-            border-color: #354230 !important;
-            color: #f4f4f0 !important;
+            background-color: var(--bg-input) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
         }
         .matte-input:focus {
-            border-color: #556b4f !important;
+            border-color: var(--accent-color) !important;
+        }
+        /* হোভার করলে কন্ট্রোল বাটন শো করার জন্য */
+        .message-row:hover .action-btns {
+            opacity: 1;
         }
     </style>
 </head>
-<body class="h-screen flex flex-col justify-center items-center font-sans overflow-hidden bg-[#121513]">
+<body id="main-body" class="h-screen flex flex-col justify-center items-center font-sans overflow-hidden">
 
     <!-- পিন পেজ -->
     <div id="pin-section" class="card w-96 matte-card shadow-2xl p-8 rounded-2xl transition-all duration-300">
         <div class="flex justify-center mb-3">
-            <div class="w-14 h-14 rounded-full bg-[#556b4f] flex items-center justify-center text-[#f4f4f0] font-bold text-2xl shadow-md">S</div>
+            <div class="w-14 h-14 rounded-full bg-[var(--accent-color)] flex items-center justify-center text-[var(--text-main)] font-bold text-2xl shadow-md">S</div>
         </div>
-        <h2 class="text-2xl font-bold text-center mb-1 text-[#a3b899]">Sagor's Chatroom</h2>
-        <p class="text-xs text-[#8fa287] text-center mb-6">অলিভ গ্রিন সিকিউরড চ্যানেল</p>
+        <h2 class="text-2xl font-bold text-center mb-1 text-[var(--text-muted)]">Welcome to Sagor's Chatroom</h2>
+        <p class="text-xs text-[var(--text-muted)] text-center mb-6">Secured Personal Channel channel</p>
         <div class="space-y-4">
             <div>
-                <label class="text-xs text-[#a3b899] mb-1.5 block font-medium">পিন কোড বা মাস্টার পাসওয়ার্ড দিন</label>
+                <label class="text-xs text-[var(--text-muted)] mb-1.5 block font-medium">Enter the pin </label>
                 <input type="password" id="pin-input" placeholder="••••" class="input input-bordered matte-input w-full text-center tracking-[0.4em] text-lg rounded-xl h-12" maxlength="30" />
             </div>
-            <button onclick="verifyPin()" class="btn bg-[#556b4f] hover:bg-[#657d5f] text-[#f4f4f0] border-none w-full font-medium shadow-md rounded-xl h-12 text-base">প্রবেশ করুন</button>
-            <p id="pin-error" class="text-[#e28787] text-xs text-center mt-2 hidden font-medium">ভুল পিন কোড! আবার চেষ্টা করুন।</p>
+            <button onclick="verifyPin()" class="btn bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-[var(--text-main)] border-none w-full font-medium shadow-md rounded-xl h-12 text-base">Enter </button>
+            <p id="pin-error" class="text-[#e28787] text-xs text-center mt-2 hidden font-medium">Wrong pin ! try again।</p>
         </div>
     </div>
 
     <!-- নাম সেটআপ পেজ -->
     <div id="name-section" class="card w-96 matte-card shadow-2xl p-8 rounded-2xl hidden transition-all duration-300">
-        <h2 class="text-2xl font-bold text-center mb-1 text-[#a3b899]">আপনার নাম</h2>
-        <p class="text-xs text-[#8fa287] text-center mb-6">চ্যাট রুমে আপনাকে কী নামে দেখাবে?</p>
+        <h2 class="text-2xl font-bold text-center mb-1 text-[var(--text-muted)]"> Write your name <h2>
+        <p class="text-xs text-[var(--text-muted)] text-center mb-6">চ্যাট রুমে আপনাকে কী নামে দেখাবে?</p>
         <div class="space-y-4">
             <div>
-                <label class="text-xs text-[#a3b899] mb-1.5 block font-medium">আপনার নাম বা নিকনেইম</label>
-                <input type="text" id="username-input" placeholder="যেমন: Nyx Lykos..." class="input input-bordered matte-input w-full rounded-xl h-12" />
+                <label class="text-xs text-[var(--text-muted)] mb-1.5 block font-medium">Name - <label>
+                <input type="text" id="username-input" placeholder="e.g : sagor " class="input input-bordered matte-input w-full rounded-xl h-12" />
             </div>
-            <button onclick="setUserName()" class="btn bg-[#556b4f] hover:bg-[#657d5f] text-[#f4f4f0] border-none w-full font-medium shadow-md rounded-xl h-12 text-base">চ্যাট শুরু করুন</button>
+            <button onclick="setUserName()" class="btn bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-[var(--text-main)] border-none w-full font-medium shadow-md rounded-xl h-12 text-base">Start chat </button>
         </div>
     </div>
 
     <!-- চ্যাট রুম পেজ -->
     <div id="chat-section" class="w-full max-w-2xl h-[95vh] matte-card shadow-2xl rounded-2xl flex flex-col hidden overflow-hidden">
         <!-- মেসঞ্জার হেডার -->
-        <div class="p-3 bg-[#1a1f1b] border-b border-[#354230] flex justify-between items-center px-5 shadow-sm z-10">
+        <div class="p-3 matte-card border-b border-[var(--border-color)] flex justify-between items-center px-5 shadow-sm z-10">
             <div class="flex items-center gap-3">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-[#556b4f] flex items-center justify-center font-bold text-[#f4f4f0] shadow">S</div>
+                    <div class="w-10 h-10 rounded-full bg-[var(--accent-color)] flex items-center justify-center font-bold text-[var(--text-main)] shadow">S</div>
                     <span class="absolute bottom-0 right-0 online-dot"></span>
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm text-[#a3b899] leading-tight">Sagor's Chatroom</h3>
-                    <p class="text-[11px] text-[#8fa287]">অ্যাক্টিভ এখন</p>
+                    <h3 class="font-bold text-sm text-[var(--text-muted)] leading-tight">Sagor's Chatroom</h3>
+                    <p class="text-[11px] text-[var(--text-muted)]">Active now </p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <span id="current-user-display" class="text-xs font-semibold text-[#a3b899] bg-[#242c23] px-3 py-1.5 rounded-full border border-[#354230]"></span>
-                <!-- অ্যাডমিন বাটন -->
-                <button id="change-pin-btn" onclick="openChangePinModal()" class="btn btn-sm btn-ghost text-[#a3b899] hover:bg-[#242c23] rounded-full hidden" title="পিন বদলান">⚙️</button>
-                <button onclick="clearLocalChat()" class="btn btn-sm btn-ghost text-[#e28787] hover:bg-[#322323] rounded-full text-xs">ক্লিয়ার</button>
+                <span id="current-user-display" class="text-xs font-semibold text-[var(--text-muted)] bg-[var(--bg-input)] px-3 py-1.5 rounded-full border border-[var(--border-color)]"></span>
+                
+                <button id="master-theme-btn" onclick="openThemeModal()" class="btn btn-sm btn-ghost text-[var(--text-muted)] hover:bg-[var(--bg-input)] rounded-full hidden" title="থিম ও সেটিংস">🎨</button>
+                <button id="change-pin-btn" onclick="openChangePinModal()" class="btn btn-sm btn-ghost text-[var(--text-muted)] hover:bg-[var(--bg-input)] rounded-full hidden" title="পিন বদলান">⚙️</button>
+                
+                <button onclick="clearLocalChat()" class="btn btn-sm btn-ghost text-[#e28787] hover:bg-[var(--bg-input)] rounded-full text-xs">Clear</button>
             </div>
         </div>
 
-        <!-- মেসেজ কন্টেইনার (ডিপ অলিভ ব্যাকগ্রাউন্ড) -->
-        <div id="message-container" class="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col bg-[#141915]"></div>
+        <!-- পিন করা মেসেজ ডিসপ্লে সেকশন -->
+        <div id="pinned-banner" class="hidden px-4 py-2 bg-[var(--bg-input)] border-b border-[var(--border-color)] flex items-center justify-between text-xs transition-all">
+            <div class="flex items-center gap-2 overflow-hidden">
+                <span class="text-[var(--accent-color)] font-bold shrink-0">📌 Pinded massage:</span>
+                <span id="pinned-text-content" class="truncate text-[var(--text-muted)]">কোনো মেসেজ পিন করা নেই</span>
+            </div>
+            <button id="unpin-btn" onclick="unpinMessage()" class="hidden text-red-400 hover:text-red-300 text-[10px] ml-2 shrink-0 font-medium">আনপিন</button>
+        </div>
 
-        <!-- মেসঞ্জার চ্যাট ইনপুট ফর্ম (টেক্সট এবং ছবি শেয়ার বাটনসহ) -->
-        <form id="chat-form" onsubmit="sendMessage(event)" class="p-3 bg-[#1a1f1b] border-t border-[#354230] flex gap-2 items-center px-4">
-            <!-- ছবি আপলোড বাটন -->
-            <label class="cursor-pointer btn btn-circle btn-sm bg-[#242c23] hover:bg-[#354230] text-[#a3b899] border border-[#354230]">
+        <!-- মেসেজ কন্টেইনার -->
+        <div id="message-container" class="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col" style="background-color: var(--chat-bg);"></div>
+
+        <!-- মেসঞ্জার চ্যাট ইনপুট ফর্ম -->
+        <form id="chat-form" onsubmit="sendMessage(event)" class="p-3 matte-card border-t border-[var(--border-color)] flex gap-2 items-center px-4">
+            
+            <label class="cursor-pointer btn btn-circle btn-sm bg-[var(--bg-input)] hover:bg-[var(--border-color)] text-[var(--text-muted)] border border-[var(--border-color)]" title="ছবি পাঠান">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
                 <input type="file" id="image-input" accept="image/*" class="hidden" onchange="previewImage(event)" />
             </label>
+
+            <div id="image-preview-container" class="hidden relative items-center">
+                <img id="image-preview" class="w-10 h-10 object-cover rounded-lg border border-[var(--accent-color)]" />
+                <button type="button" onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">✕</button>
+            </div>
+
+            <input type="text" id="message-input" placeholder="write a massage..." class="input input-bordered matte-input flex-1 rounded-full h-11 text-sm" autocomplete="off" />
+            
+            <button type="submit" class="btn btn-circle bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-[var(--text-main)] border-none shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L5.999 12zm0 0h7.5" />
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- থিম ও ব্যাকগ্রাউন্ড কাস্টমাইজেশন মডাল -->
+    <div id="theme-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex justify-center items-center hidden z-50">
+        <div class="card w-80 matte-card shadow-2xl p-6 rounded-2xl border border-[var(--border-color)]">
+            <h3 class="text-lg font-bold text-[var(--text-muted)] mb-1">থিম ও ব্যাকগ্রাউন্ড</h3>
+            <p class="text-[11px] text-[var(--text-muted)] mb-4">আপনার পছন্দমতো কাস্টমাইজ করুন</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs text-[var(--text-muted)] mb-1 block">রঙের থিম সিলেক্ট করুন</label>
+                    <select id="theme-selector" class="select select-bordered matte-input w-full text-xs rounded-xl h-10" onchange="changeTheme(this.value)">
+                        <option value="default">অলিভ গ্রিন (ডিফল্ট)</option>
+                        <option value="midnight">মিডনাইট ব্লু</option>
+                        <option value="crimson">ক্রিমসন রেড</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-[var(--text-muted)] mb-1 block">ব্যাকগ্রাউন্ড ছবি আপলোড করুন</label>
+                    <input type="file" id="bg-file-input" accept="image/*" class="file-input file-input-bordered matte-input w-full text-xs h-10" onchange="setCustomBackground(event)" />
+                </div>
+                <div>
+                    <button onclick="removeCustomBackground()" class="btn btn-sm w-full btn-outline border-[var(--border-color)] text-[#e28787] hover:bg-red-500/10 hover:border-red-500 hover:text-red-400">ব্যাকগ্রাউন্ড পিক রিমুভ করুন</button>
+                </div>
+                <div class="flex gap-2 mt-2">
+                    <button onclick="closeThemeModal()" class="btn btn-sm w-full bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-white border-none">সম্পন্ন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- পিন পরিবর্তনের পপআপ মডাল -->
+    <div id="pin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex justify-center items-center hidden z-50">
+        <div class="card w-80 matte-card shadow-2xl p-6 rounded-2xl border border-[var(--border-color)]">
+            <h3 class="text-lg font-bold text-[var(--text-muted)] mb-1">নতুন পিন সেট করুন</h3>
+            <p class="text-[11px] text-[var(--text-muted)] mb-4">৪ ডিজিটের নতুন পিন কোড লিখুন</p>
+            <div class="space-y-3">
+                <input type="password" id="new-pin" placeholder="নতুন পিন (৪ ডিজিট)" class="input input-bordered matte-input w-full rounded-xl text-center tracking-widest text-sm" maxlength="4" />
+                <div class="flex gap-2 mt-4">
+                    <button onclick="closeChangePinModal()" class="btn btn-sm flex-1 btn-ghost border border-[var(--border-color)] text-[var(--text-muted)]">বাতিল</button>
+                    <button onclick="updateCloudPin()" class="btn btn-sm flex-1 bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-white border-none">সেভ করুন</button>
+                </div>
+                <p id="modal-msg" class="text-xs text-center mt-2 font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ফায়ারবেস ও লজিক স্ক্রিপ্ট -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, get, child, onChildAdded, onChildRemoved, remove, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8aJlXFdYdGqDkAF3RPGdSxR6RLGXd0Bs",
+            authDomain: "assanger-51e65.firebaseapp.com",
+            databaseURL: "https://assanger-51e65-default-rtdb.firebaseio.com",
+            projectId: "assanger-51e65",
+            storageBucket: "assanger-51e65.appspot.com",
+            messagingSenderId: "887503433353",
+            appId: "1:887503433353:web:8255955b0d958ea88e2058"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const messagesRef = ref(db, 'messages');
+        const pinRef = ref(db, 'settings/pin');
+        const pinnedMsgRef = ref(db, 'settings/pinnedMessage');
+
+        const MASTER_PASSWORD = "SagorMasterPassword99"; 
+        let isAdmin = false;
+        let myUserName = "";
+        let loadedMessageIds = new Set();
+        let selectedBase64Image = null;
+        let isInitialLoad = true;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('sagor_chat_theme');
+            if (savedTheme) {
+                changeTheme(savedTheme, false);
+                document.getElementById('theme-selector').value = savedTheme;
+            }
+            const savedBg = localStorage.getItem('sagor_chat_bg');
+            if (savedBg) {
+                document.getElementById('main-body').style.backgroundImage = `url('${savedBg}')`;
+            }
+        });
+
+        get(pinRef).then((snapshot) => {
+            if (!snapshot.exists()) {
+                set(pinRef, "1000");
+            }
+        });
+
+        // নতুন মেসেজ আসলে শব্দ বাজানোর ফাংশন (Web Audio API)
+        function playNotificationSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); // A5 note
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        window.verifyPin = async function() {
+            const inputVal = document.getElementById('pin-input').value.trim();
+            try {
+                const snapshot = await get(pinRef);
+                const currentPin = snapshot.exists() ? snapshot.val() : "1000";
+
+                if (inputVal === MASTER_PASSWORD) {
+                    isAdmin = true;
+                    document.getElementById('pin-section').classList.add('hidden');
+                    document.getElementById('name-section').classList.remove('hidden');
+                } else if (inputVal === currentPin) {
+                    isAdmin = false;
+                    document.getElementById('pin-section').classList.add('hidden');
+                    document.getElementById('name-section').classList.remove('hidden');
+                } else {
+                    document.getElementById('pin-error').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("পিন ভেরিফিকেশন এরর:", error);
+                alert("নেটওয়ার্ক সমস্যা! আবার চেষ্টা করুন।");
+            }
+        }
+
+        window.openThemeModal = function() {
+            if (!isAdmin) return;
+            document.getElementById('theme-modal').classList.remove('hidden');
+        }
+
+        window.closeThemeModal = function() {
+            document.getElementById('theme-modal').classList.add('hidden');
+        }
+
+        window.changeTheme = function(themeName, save = true) {
+            const body = document.getElementById('main-body');
+            body.className = "h-screen flex flex-col justify-center items-center font-sans overflow-hidden";
+            if (themeName !== 'default') {
+                body.classList.add(`theme-${themeName}`);
+            }
+            const savedBg = localStorage.getItem('sagor_chat_bg');
+            if (savedBg) {
+                body.style.backgroundImage = `url('${savedBg}')`;
+            }
+            if (save) {
+                localStorage.setItem('sagor_chat_theme', themeName);
+            }
+        }
+
+        window.setCustomBackground = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Bg = e.target.result;
+                    document.getElementById('main-body').style.backgroundImage = `url('${base64Bg}')`;
+                    localStorage.setItem('sagor_chat_bg', base64Bg);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.removeCustomBackground = function() {
+            localStorage.removeItem('sagor_chat_bg');
+            document.getElementById('main-body').style.backgroundImage = 'none';
+            document.getElementById('bg-file-input').value = '';
+        }
+
+window.openChangePinModal = function() {
+            if (!isAdmin) return;
+            document.getElementById('pin-modal').classList.remove('hidden');
+            document.getElementById('new-pin').value = '';
+            document.getElementById('modal-msg').innerText = '';
+        }
+
+        window.closeChangePinModal = function() {
+                  </label>
 
             <!-- ইমেজ প্রিভিউ কন্টেইনার (ছবি সিলেক্ট করলে ছোট করে দেখাবে) -->
             <div id="image-preview-container" class="hidden relative items-center">
